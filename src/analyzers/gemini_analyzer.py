@@ -1,7 +1,7 @@
 """Gemini AI analyzer for research data."""
 
 from typing import Dict, Any, List
-import google.generativeai as genai
+from google import genai
 
 from src.config import Config
 from src.utils.logger import get_logger
@@ -13,8 +13,7 @@ class GeminiAnalyzer:
 
     def __init__(self):
         """Initialize Gemini analyzer."""
-        genai.configure(api_key=Config.GEMINI_API_KEY)
-        self.model = genai.GenerativeModel(Config.GEMINI_MODEL)
+        self.client = genai.Client(api_key=Config.GEMINI_API_KEY)
         self.logger = get_logger(self.__class__.__name__)
 
     def analyze(
@@ -53,16 +52,14 @@ class GeminiAnalyzer:
             else:
                 prompt = get_analysis_prompt(topic, data_items, depth)
 
-            # Configure generation parameters
-            generation_config = genai.types.GenerationConfig(
-                max_output_tokens=Config.GEMINI_MAX_TOKENS,
-                temperature=Config.GEMINI_TEMPERATURE,
-            )
-
-            # Call Gemini API
-            response = self.model.generate_content(
-                prompt,
-                generation_config=generation_config
+            # Call Gemini API with new client
+            response = self.client.models.generate_content(
+                model=Config.GEMINI_MODEL,
+                contents=prompt,
+                config={
+                    'max_output_tokens': Config.GEMINI_MAX_TOKENS,
+                    'temperature': Config.GEMINI_TEMPERATURE,
+                }
             )
 
             # Extract analysis from response

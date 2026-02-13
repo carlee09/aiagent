@@ -29,8 +29,16 @@ AI-powered research automation and analysis tool that helps researchers focus on
 git clone https://github.com/yourusername/research-agent.git
 cd research-agent
 
-# Create virtual environment
-python -m venv venv
+# Check Python version (must be 3.10+)
+python3 --version
+
+# If Python < 3.10, install a newer version:
+# macOS: brew install python@3.12
+# Ubuntu/Debian: sudo apt install python3.12
+# Windows: Download from python.org
+
+# Create virtual environment with Python 3.10+
+python3.10 -m venv venv  # or python3.11, python3.12
 source venv/bin/activate  # On Windows: venv\Scripts\activate
 
 # Install dependencies
@@ -326,11 +334,14 @@ research-agent/
 
 ## Requirements
 
-- Python 3.9+ (Python 3.10+ recommended)
+- **Python 3.10+ (REQUIRED)** - Python 3.9 is past its end-of-life and no longer supported
 - At least one AI API key:
   - Google Gemini API key (recommended), OR
   - Anthropic Claude API key
 - Sela Network API key (for X and web search)
+
+### ⚠️ Important: Python Version
+Python 3.9 reached end-of-life and is no longer receiving updates. The dependencies (google-auth, google-genai) will only provide critical bug fixes for Python 3.9 on a best-effort basis. **Please upgrade to Python 3.10 or later.**
 
 ### Dependencies (v2.0.0)
 The following packages are automatically installed:
@@ -447,12 +458,27 @@ SELA_API_ENDPOINT=https://api.selanetwork.io/api/rpc/scrapeUrl
 ```
 
 ### Python version warnings
-Google recommends Python 3.10+. To upgrade:
+**Python 3.9 is no longer supported.** You must use Python 3.10 or later. To upgrade:
+
 ```bash
-# Install Python 3.11 or 3.12
-# Recreate virtual environment
-python3.11 -m venv venv
-source venv/bin/activate
+# 1. Install Python 3.10+ (if not already installed)
+# macOS (Homebrew):
+brew install python@3.12
+
+# Ubuntu/Debian:
+sudo apt update
+sudo apt install python3.12 python3.12-venv
+
+# Windows: Download from https://www.python.org/downloads/
+
+# 2. Remove old virtual environment
+rm -rf venv
+
+# 3. Create new virtual environment with Python 3.10+
+python3.12 -m venv venv
+source venv/bin/activate  # Windows: venv\Scripts\activate
+
+# 4. Reinstall dependencies
 pip install -r requirements.txt
 pip install -e .
 ```

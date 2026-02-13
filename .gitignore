@@ -62,3 +62,4 @@ Thumbs.db
 
 # Logs
 *.log
+debug_api_response.py

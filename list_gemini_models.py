@@ -7,20 +7,26 @@ from pathlib import Path
 # Add src to path
 sys.path.insert(0, str(Path(__file__).parent / "src"))
 
-import google.generativeai as genai
+from google import genai
 from config import Config
 
-# Configure Gemini
-genai.configure(api_key=Config.GEMINI_API_KEY)
+# Initialize Gemini client
+client = genai.Client(api_key=Config.GEMINI_API_KEY)
 
 print("Available Gemini Models:\n")
 print("=" * 60)
 
-for model in genai.list_models():
-    if 'generateContent' in model.supported_generation_methods:
+# List models using new API
+try:
+    models = client.models.list()
+    for model in models:
         print(f"\n✓ Model: {model.name}")
         print(f"  Display Name: {model.display_name}")
-        print(f"  Description: {model.description}")
-        print(f"  Supported Methods: {', '.join(model.supported_generation_methods)}")
+        if hasattr(model, 'description'):
+            print(f"  Description: {model.description}")
+        if hasattr(model, 'supported_generation_methods'):
+            print(f"  Supported Methods: {', '.join(model.supported_generation_methods)}")
+except Exception as e:
+    print(f"Error listing models: {e}")
 
 print("\n" + "=" * 60)

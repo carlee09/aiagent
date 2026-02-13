@@ -7,6 +7,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.0.1] - 2026-02-13
+
+### Changed
+- **BREAKING**: Updated minimum Python version requirement from 3.9 to 3.10
+- Migrated from deprecated `google-generativeai` to `google-genai` package
+- Updated all Gemini API calls to use new `google.genai.Client` architecture
+- Enhanced documentation to emphasize Python 3.10+ requirement
+
+### Fixed
+- Removed deprecation warnings for `google.generativeai` package
+- Updated imports: `import google.generativeai as genai` → `from google import genai`
+- Updated API initialization to use centralized Client object pattern
+- Updated model usage from `GenerativeModel` to `client.models.generate_content()`
+
+### Dependencies Changed
+- Removed: `google-generativeai>=0.3.0`
+- Added: `google-genai>=0.3.0`
+
 ## [2.0.0] - 2026-02-13
 
 ### Added - Report Quality Improvements
