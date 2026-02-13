@@ -20,7 +20,8 @@ class ClaudeAnalyzer:
         self,
         topic: str,
         data_items: List[Dict[str, Any]],
-        depth: str = "detailed"
+        depth: str = "detailed",
+        custom_prompt: str = None
     ) -> Dict[str, Any]:
         """
         Analyze collected research data using Claude AI.
@@ -29,6 +30,7 @@ class ClaudeAnalyzer:
             topic: Research topic
             data_items: List of collected data items
             depth: Analysis depth (quick or detailed)
+            custom_prompt: Optional custom prompt (for interactive mode)
 
         Returns:
             Dictionary containing analysis results
@@ -44,8 +46,11 @@ class ClaudeAnalyzer:
             }
 
         try:
-            # Generate prompt
-            prompt = get_analysis_prompt(topic, data_items, depth)
+            # Generate prompt (use custom if provided)
+            if custom_prompt:
+                prompt = custom_prompt
+            else:
+                prompt = get_analysis_prompt(topic, data_items, depth)
 
             # Call Claude API
             response = self.client.messages.create(

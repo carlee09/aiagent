@@ -21,7 +21,8 @@ class GeminiAnalyzer:
         self,
         topic: str,
         data_items: List[Dict[str, Any]],
-        depth: str = "detailed"
+        depth: str = "detailed",
+        custom_prompt: str = None
     ) -> Dict[str, Any]:
         """
         Analyze collected research data using Gemini AI.
@@ -30,6 +31,7 @@ class GeminiAnalyzer:
             topic: Research topic
             data_items: List of collected data items
             depth: Analysis depth (quick or detailed)
+            custom_prompt: Optional custom prompt (for interactive mode)
 
         Returns:
             Dictionary containing analysis results
@@ -45,8 +47,11 @@ class GeminiAnalyzer:
             }
 
         try:
-            # Generate prompt
-            prompt = get_analysis_prompt(topic, data_items, depth)
+            # Generate prompt (use custom if provided)
+            if custom_prompt:
+                prompt = custom_prompt
+            else:
+                prompt = get_analysis_prompt(topic, data_items, depth)
 
             # Configure generation parameters
             generation_config = genai.types.GenerationConfig(

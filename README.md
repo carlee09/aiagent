@@ -1,16 +1,22 @@
 # Research Agent 🔬
 
+> **Version 2.0.0** - AI-powered research automation with advanced analytics and interactive features
+
 AI-powered research automation and analysis tool that helps researchers focus on insights instead of data collection.
 
 ## Overview
 
-**Research Agent** automatically collects data from X (Twitter) and web search, analyzes it with AI (Claude or Gemini), and generates comprehensive Markdown research reports.
+**Research Agent** automatically collects data from X (Twitter) and web search, analyzes it with AI (Claude or Gemini), and generates comprehensive Markdown research reports with **advanced sentiment analysis, keyword extraction, temporal trends, and interactive follow-up capabilities**.
 
 ### Key Features
 
 - 🤖 **Multiple AI Models**: Choose between Claude Sonnet 4 or Google Gemini
 - 🔍 **Multi-Source Collection**: Automated data gathering from X and web
-- 📝 **Beautiful Reports**: Structured Markdown reports ready to use
+- 📊 **Advanced Analytics**: Sentiment analysis, keyword extraction, and trend analysis
+- 💡 **Smart Error Handling**: Partial results support and intelligent retry logic
+- 🔄 **Comparison Analysis**: Track changes between reports over time
+- 💬 **Interactive Mode**: Ask follow-up questions without re-collecting data
+- 📝 **Enhanced Reports**: Beautiful Markdown reports with charts and insights
 - ⚡ **Fast & Efficient**: Research in minutes, not hours
 - 🎯 **Flexible Options**: Customizable sources, depth, model, and output
 
@@ -55,9 +61,22 @@ SELA_API_ENDPOINT=https://api.selanetwork.io/api/rpc/scrapeUrl
 DEFAULT_MODEL=gemini
 ```
 
+## 🎉 What's New in v2.0.0
+
+Research Agent has been **significantly enhanced** with powerful new features:
+
+- **📊 Advanced Analytics**: Every report includes sentiment analysis, keyword extraction, and trend analysis
+- **💬 Interactive Mode**: Ask follow-up questions without re-collecting data (`--interactive`)
+- **🔄 Comparison**: Track changes over time by comparing reports (`--compare-with`)
+- **🛡️ Robust Error Handling**: Continues with partial data when sources fail (`--allow-partial`)
+- **📈 Visual Insights**: ASCII charts and visualizations in reports
+- **🎯 Smart Retry Logic**: Automatic exponential backoff for failed requests
+
+[Read the full changelog →](CHANGELOG.md)
+
 ### Usage
 
-Basic usage:
+Basic usage (with all enhanced features):
 ```bash
 research-agent --topic "AI agents 2024"
 ```
@@ -92,6 +111,9 @@ research-agent \
 | `--model` | AI model: `claude` or `gemini` | `gemini` |
 | `--output` | Output filename | Auto-generated |
 | `--depth` | Analysis depth: `quick` or `detailed` | `detailed` |
+| `--allow-partial` | Allow partial results if some sources fail | `True` |
+| `--compare-with` | Previous report to compare with (file path) | - |
+| `--interactive` | Enter interactive mode after analysis | `False` |
 
 ## Examples
 
@@ -126,6 +148,102 @@ research-agent --topic "sustainable fashion trends" \
 
 **Result**: Social media trends and influencer opinions on sustainable fashion.
 
+### Example 4: Comparison Analysis (v2.0+)
+```bash
+# First report
+research-agent --topic "ethereum" --output eth_week1.md
+
+# Compare with new data
+research-agent --topic "ethereum" \
+  --output eth_week2.md \
+  --compare-with output/eth_week1.md
+```
+
+**Result**: Shows what changed - new topics, sentiment shifts, and trend direction.
+
+### Example 5: Interactive Research Session (v2.0+)
+```bash
+research-agent --topic "AI safety concerns" \
+  --sources x,web \
+  --max-items 20 \
+  --interactive
+```
+
+**Then ask:**
+```
+You: What are the main concerns mentioned?
+You: Show me positive opinions only
+You: Focus on regulation
+You: exit
+```
+
+**Result**: Get instant answers without re-collecting data.
+
+## 🆕 New Features (v2.0.0)
+
+### Sentiment Analysis & Insights
+Every report now includes automatic sentiment analysis with distribution charts:
+
+```bash
+research-agent --topic "product launch reactions"
+```
+
+**You get:**
+- Overall sentiment (Positive/Neutral/Negative)
+- Distribution breakdown with ASCII charts
+- Compound sentiment score
+
+### Keyword Extraction
+Automatically extracts and ranks the top 20 keywords:
+
+```bash
+research-agent --topic "AI trends 2024"
+```
+
+**You get:**
+- 🔥 Most important topics
+- 📌 Secondary themes
+- Relevance scoring
+
+### Comparison Analysis
+Compare current research with previous reports:
+
+```bash
+research-agent --topic "bitcoin" --compare-with reports/bitcoin_last_week.md
+```
+
+**You get:**
+- New topics that emerged
+- Topics that declined
+- Sentiment shifts
+- Trend direction
+
+### Interactive Mode
+Ask follow-up questions without re-collecting data:
+
+```bash
+research-agent --topic "AI safety" --interactive
+```
+
+**Then ask:**
+- "What are the main concerns?"
+- "Show me positive opinions only"
+- "Focus on regulation"
+- Type `help` for all commands
+
+### Smart Error Handling
+Collections continue even when sources fail:
+
+```bash
+research-agent --topic "niche topic" --allow-partial
+```
+
+**Benefits:**
+- Automatic retry with exponential backoff
+- Partial results when one source fails
+- Clear error messages with suggestions
+- Never lose all data due to one failure
+
 ## AI Models
 
 ### Google Gemini (Recommended)
@@ -146,14 +264,25 @@ You can switch between models anytime using the `--model` option!
 
 Generated reports include:
 
+### Enhanced Analytics (v2.0+)
+- **📊 Quick Stats Dashboard**: Overall sentiment, top keyword, activity stats
+- **😊 Sentiment Analysis**: Distribution with visual charts (Positive/Neutral/Negative)
+- **🔑 Top Keywords**: Most important topics ranked by relevance
+- **📈 Temporal Trends**: Timeline, engagement stats, and activity frequency
+- **🔄 Comparison** (optional): Changes since previous report
+
+### AI Analysis
 - **Executive Summary**: Key findings in 3-5 sentences
 - **Key Insights**: Major discoveries with evidence
 - **Detailed Analysis**: Thematic breakdown of findings
 - **Opinion Analysis**: Mainstream vs. contrasting views
-- **Data Sources**: All X posts and web articles referenced
 - **Conclusion**: Recommendations and next steps
 
-See [examples/sample_report.md](examples/sample_report.md) for a complete example.
+### Data Sources
+- **X (Twitter)**: Posts with engagement metrics (or N/A if unavailable)
+- **Web**: Articles with source and date information
+
+See [examples/sample_report.md](examples/sample_report.md) or the generated test report for examples.
 
 ## Project Structure
 
@@ -163,20 +292,36 @@ research-agent/
 │   ├── main.py              # CLI entry point
 │   ├── config.py            # Configuration management
 │   ├── collectors/          # Data collection
+│   │   ├── base.py          # Base with retry logic
 │   │   ├── x_collector.py   # X API integration
 │   │   └── web_collector.py # Web search integration
-│   ├── analyzers/           # AI analysis
-│   │   ├── claude_analyzer.py   # Claude integration
-│   │   ├── gemini_analyzer.py   # Gemini integration
+│   ├── analyzers/           # AI & Enhanced analysis
+│   │   ├── claude_analyzer.py      # Claude integration
+│   │   ├── gemini_analyzer.py      # Gemini integration
+│   │   ├── sentiment_analyzer.py   # Sentiment analysis (NEW)
+│   │   ├── keyword_extractor.py    # Keyword extraction (NEW)
+│   │   ├── trend_analyzer.py       # Trend analysis (NEW)
+│   │   ├── comparison_analyzer.py  # Report comparison (NEW)
 │   │   └── prompt_templates.py
+│   ├── parsers/             # Report parsing (NEW)
+│   │   └── report_parser.py # Parse existing reports
+│   ├── interactive/         # Interactive mode (NEW)
+│   │   ├── session.py       # Session management
+│   │   ├── followup_analyzer.py
+│   │   └── prompts.py
 │   ├── generators/          # Report generation
-│   │   └── markdown_generator.py
+│   │   └── markdown_generator.py  # Enhanced reports
 │   └── utils/              # Utilities
 │       ├── logger.py
-│       └── validators.py
+│       ├── validators.py
+│       └── error_reporter.py      # Error handling (NEW)
 ├── examples/               # Sample files
 ├── tests/                 # Test suite
-└── reports/              # Generated reports
+├── output/                # Generated reports
+└── docs/                  # Documentation
+    ├── ENHANCEMENTS.md
+    ├── QUICK_START.md
+    └── IMPLEMENTATION_SUMMARY.md
 ```
 
 ## Requirements
@@ -186,6 +331,18 @@ research-agent/
   - Google Gemini API key (recommended), OR
   - Anthropic Claude API key
 - Sela Network API key (for X and web search)
+
+### Dependencies (v2.0.0)
+The following packages are automatically installed:
+- `click` - CLI framework
+- `anthropic` - Claude AI
+- `google-generativeai` - Gemini AI
+- `requests` - HTTP client
+- `rich` - Beautiful terminal output
+- `tenacity` - Advanced retry logic
+- `vaderSentiment` - Sentiment analysis
+- `yake` - Keyword extraction
+- `prompt_toolkit` - Interactive CLI
 
 ## API Setup
 
@@ -245,25 +402,35 @@ Contributions are welcome! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for gui
 
 ## Roadmap
 
-### ✅ Completed (v0.1.0)
+### ✅ Completed (v2.0.0) - February 2026
 - [x] CLI interface with Click
 - [x] X and Web data collection
 - [x] Claude AI integration
 - [x] Gemini AI integration
 - [x] Markdown report generation
 - [x] Multi-model support
+- [x] **Sentiment analysis with VADER**
+- [x] **Keyword extraction with YAKE**
+- [x] **Temporal trend analysis**
+- [x] **Enhanced error handling with retry logic**
+- [x] **Partial results support**
+- [x] **Report comparison and change tracking**
+- [x] **Interactive mode with follow-up questions**
+- [x] **ASCII charts and visualizations**
 
-### Phase 2 (3 months)
+### Phase 2 (Next 3 months)
 - [ ] Scheduled research automation
-- [ ] Change tracking and comparison
 - [ ] PDF and HTML export
 - [ ] Additional AI models (GPT-4, etc.)
+- [ ] Email notifications
+- [ ] Advanced visualizations (graphs, charts)
 
 ### Phase 3 (6 months)
-- [ ] Interactive mode with follow-up questions
-- [ ] Chart and graph generation
 - [ ] Team collaboration features
 - [ ] Web dashboard
+- [ ] Real-time monitoring
+- [ ] Custom data source plugins
+- [ ] API mode for integration
 
 ## Troubleshooting
 
@@ -293,6 +460,27 @@ pip install -e .
 ## License
 
 MIT License - see [LICENSE](LICENSE) for details.
+
+## Documentation
+
+### Quick Links
+- **[QUICK_START.md](QUICK_START.md)** - Get started in 5 minutes
+- **[ENHANCEMENTS.md](ENHANCEMENTS.md)** - Detailed feature documentation
+- **[IMPLEMENTATION_SUMMARY.md](IMPLEMENTATION_SUMMARY.md)** - Technical details
+- **[CHANGELOG.md](CHANGELOG.md)** - Version history
+
+### Testing
+Run the test suite to verify all features:
+```bash
+# Test core features
+python test_enhancements.py
+
+# Test report generation
+python test_report_generation.py
+
+# Test N/A fallback for missing data
+python test_na_fallback.py
+```
 
 ## Changelog
 

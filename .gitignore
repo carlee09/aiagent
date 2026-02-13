@@ -41,13 +41,20 @@ env/
 htmlcov/
 .tox/
 
-# Reports output
+# Reports output (generated reports should not be committed)
 reports/
+output/
+
+# Exclude all .md files except documentation
 *.md
 !README.md
 !CONTRIBUTING.md
 !CHANGELOG.md
 !PRD.md
+!ENHANCEMENTS.md
+!IMPLEMENTATION_SUMMARY.md
+!QUICK_START.md
+!docs/*.md
 
 # OS
 .DS_Store
